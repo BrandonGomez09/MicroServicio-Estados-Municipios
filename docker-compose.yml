@@ -1,0 +1,17 @@
+services:
+  # Definimos nuestro servicio de base de datos
+  postgres-db:
+    image: postgres:15-alpine # La imagen oficial de Postgres (versión 15, ligera)
+    container_name: states_municipalities_db # Un nombre fácil de identificar
+    restart: always # Siempre reinicia el contenedor si se cae
+    environment:
+      POSTGRES_USER: admin_user # Puedes cambiarlo si quieres
+      POSTGRES_PASSWORD: admin_password # ¡Cambia esto por una contraseña segura!
+      POSTGRES_DB: states_municipalities_db # El nombre de nuestra base de datos
+    ports:
+      - "5432:5432" # Expone el puerto 5432 de Docker a tu puerto 5432 local
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data # Guarda los datos de la BD en una carpeta local
+
+volumes:
+  postgres-data: # Define el volumen que usamos arriba

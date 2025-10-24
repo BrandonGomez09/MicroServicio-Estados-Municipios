@@ -1,0 +1,42 @@
+// Este es el "generador" que crea el cliente de Prisma (nuestro ORM)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Aquí le decimos a Prisma cómo conectarse a la base de datos
+// "db" apunta a la variable DATABASE_URL en tu archivo .env
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- AQUI EMPIEZA NUESTRO MOLDE ----------
+
+// Modelo para la tabla 'states'
+model State {
+  id            Int            @id @default(autoincrement())
+  name          String
+
+  // Esta es la "relación": Un Estado (State) tiene muchos Municipios (Municipality)
+  municipalities Municipality[]
+
+  // Esto le dice a Prisma que la tabla en PostgreSQL se llama 'states' (en minúsculas)
+  @@map("states")
+}
+
+// Modelo para la tabla 'municipalities'
+model Municipality {
+  id        Int    @id @default(autoincrement())
+  name      String
+
+  // --- Esta es la Llave Foránea ---
+  state_id  Int // La columna que guarda el ID del estado
+
+  // Esta es la "relación": Este municipio pertenece a UN Estado (State)
+  // "fields" le dice qué columna usar (state_id)
+  // "references" le dice a qué columna apunta (id en la tabla State)
+  state     State  @relation(fields: [state_id], references: [id])
+
+  // Esto le dice a Prisma que la tabla se llama 'municipalities'
+  @@map("municipalities")
+}
