@@ -1,6 +1,18 @@
-# Dependencias
-node_modules
-
-# Archivos de entorno
-.env    
-/src/generated/prisma
+    # Dependencias
+    /node_modules
+    
+    # Archivos de la Base de Datos de Docker
+    # Esto soluciona tu Punto #1
+    /postgres-data
+    
+    # Archivos de entorno
+    .env
+    
+    # Carpeta de compilación de TypeScript
+    /dist
+    
+    # Logs
+    npm-debug.log*
+    yarn-debug.log*
+    yarn-error.log*
+    

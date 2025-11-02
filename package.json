@@ -1,24 +1,30 @@
 {
-  "name": "micro-estados-municipios",
+  "name": "states-service",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Micro-servicio de estados y municipios con TypeORM y TypeScript",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "TS_NODE_BASEURL=./dist node -r tsconfig-paths/register dist/server.js",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "seed": "ts-node-dev src/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^6.18.0",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "reflect-metadata": "^0.2.2",
+    "tsconfig-paths": "^4.2.0",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "prisma": "^6.18.0"
-  },
-  "prisma": {
-    "seed": "node prisma/seed.js"
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.9",
+    "@types/pg": "^8.11.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.3"
   }
 }
+
