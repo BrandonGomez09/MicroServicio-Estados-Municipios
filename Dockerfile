@@ -1,36 +1,32 @@
-# --- Fase 1: Construcción (Instalar dependencias) ---
-# Usamos una imagen oficial de Node.js (versión 18) como base
+# --- Fase 1: Instalación y Compilación ---
 FROM node:18-alpine AS builder
-
-# Establecemos el directorio de trabajo dentro del contenedor
 WORKDIR /app
-
 COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
-# Instalamos las dependencias de producción
+# --- Fase 2: "Podar" dependencias (Pruner) ---
+FROM node:18-alpine AS pruner
+WORKDIR /app
+COPY --from=builder /app/package.json ./package.json
 RUN npm install --omit=dev
 
-# --- Fase 2: Producción (Preparar la app final) ---
-# Empezamos desde una imagen limpia de Node.js
-FROM node:18-alpine
-
+# --- Fase 3: Imagen Final (Final) ---
+FROM node:18-alpine AS final
 WORKDIR /app
 
-# Copiamos las dependencias ya instaladas de la fase 'builder'
-COPY --from=builder /app/node_modules ./node_modules
+# Copiar solo las dependencias de producción
+COPY --from=pruner /app/node_modules ./node_modules
+# Copiar el código JavaScript compilado
+COPY --from=builder /app/dist ./dist
+# Copiar el package.json (Node lo necesita)
+COPY package.json .
 
-# Copiamos el resto de nuestro código (src, prisma, package.json, etc.)
-COPY . .
+# --- LA LÍNEA MÁGICA QUE FALTABA ---
+# Copiar el tsconfig.json para que tsconfig-paths pueda leer los alias
+COPY tsconfig.json .
 
-# MUY IMPORTANTE: Generamos el cliente de Prisma
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-# Esto es necesario para que Prisma funcione dentro de Docker
-RUN npx prisma generate
-
-# Exponemos el puerto 3000 (el puerto en el que corre nuestra app)
-# Este puerto solo será visible DENTRO de la red de Docker
 EXPOSE 3000
-
-# El comando para iniciar la aplicación
+# El comando de inicio ahora usa tsconfig-paths (package.json)
 CMD [ "npm", "start" ]
